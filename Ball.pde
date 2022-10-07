@@ -1,58 +1,47 @@
 public class Ball {
-  float diameter, radius;
-  PVector vel, acc, pos;
-  
-  public Ball( float x, float y ) {
-    diameter = 50f;
-    radius = diameter / 2f;
-    vel = new PVector( 0, 0 );
-    acc = new PVector( 0, 0 );
-    pos = new PVector( x, y );
-  }
-  
-  public void setVel( PVector a ) {
-    vel = a;
-  }
-  
-  public void updatePos() {
-    vel.add( acc );
-    pos.add( vel );
-    vel.mult( 0.99 );
-  }
-  
-  public void updateCol( ArrayList<Ball> a ) {
-    for( Ball b : a ) {
-      if( this != b ) {
-        if( PVector.dist( this.pos, b.pos ) < this.radius + b.radius ) {
-          PVector offset = PVector.sub( this.pos, b.pos );
-          this.pos = b.pos.copy().add( offset.copy().setMag( this.radius + b.radius ) );
-          
-          b.vel = offset.copy().rotate( PI ).setMag( ( (float) Math.sin( offset.heading() ) * this.vel.mag() ) + b.vel.mag() );
-          
-          this.vel.rotate( ( 2 * PI ) - offset.heading() ).setMag( (float) Math.cos( offset.heading() ) * this.vel.mag() );
-        }
-      }
+    public PVector acceleration;
+    public PVector velocity;
+    public PVector position;
+    public float radius; // will be tied to mass
+    
+    public Ball(float x, float y) {
+        this.acceleration = PVector.random2D().mult(random(10));
+        this.velocity = new PVector(0, 0);
+        this.position = new PVector(x, y);
+        this.radius = 50;
     }
-  }
-  
-  public void wrap() {
-    if( pos.x < ( 0f - radius ) ) {
-      pos.x = width + radius;
+    
+    public float floatMod(float dividend, float divisor) {
+        return (float) (dividend - Math.floor(dividend / divisor) * divisor);
     }
-    if( pos.y < ( 0f - radius ) ) {
-      pos.y = height + radius;
+    
+    public void run() {
+        collide();
+        update();
+        wrap();
+        render();
     }
-    if( pos.x > ( width + radius ) ) {
-      pos.x = 0f - radius;
+    
+    public void collide() {
+        
     }
-    if( pos.y > ( height + radius ) ) {
-      pos.y = 0f - radius;
+    
+    public void update() {
+        this.velocity.add(this.acceleration);
+        this.position.add(this.velocity);
+        this.velocity.mult(.99);
+        this.acceleration = new PVector(0, 0);
     }
-  }
-  
-  public void render() {
-    noStroke();
-    fill( 128 );
-    circle( pos.x, pos.y, diameter );
-  }
+    
+    public void wrap() {
+        this.position.x = floatMod(this.position.x + this.radius, width + 2 * this.radius) - this.radius;
+        this.position.y = floatMod(this.position.y + this.radius, height + 2 * this.radius) - this.radius;
+    }
+    
+    public void render() {
+        noStroke();
+        ellipseMode(RADIUS);
+        fill(0x88FFFFFF);
+        circle(this.position.x, this.position.y, this.radius);
+    }
 }
