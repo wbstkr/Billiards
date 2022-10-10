@@ -1,5 +1,5 @@
 public class PoolTable {
-    public ArrayList<Ball> balls;
+    private ArrayList<Ball> balls;
     
     public PoolTable(int initCount) {
         this.balls = new ArrayList();
@@ -8,10 +8,14 @@ public class PoolTable {
             initCount--;
         }
     }
+
+    public void add(float x, float y) {
+        this.balls.add(new Ball(x, y));
+    }
     
     public void run() {
         for (Ball ball : this.balls) {
-            ball.run();
+            ball.run(this.balls);
         }
     }
 }
