@@ -4,8 +4,8 @@ public class Ball {
     private PVector position;
     private float radius; // will be tied to mass
     
-    public Ball(float x, float y) {
-        this.acceleration = PVector.random2D().mult(random(10));
+    public Ball(float x, float y, PVector initAcc) {
+        this.acceleration = initAcc;
         this.velocity = new PVector(0, 0);
         this.position = new PVector(x, y);
         this.radius = random(30) + 20;
@@ -18,6 +18,14 @@ public class Ball {
     public boolean touching(Ball ball) {
         return PVector.dist(this.position, ball.position) < this.radius + ball.radius;
     }
+
+    public boolean touching(PVector point) {
+        return PVector.dist(this.position, point) < this.radius;
+    }
+
+    public void addForce(PVector force) {
+        this.acceleration.add(force);
+    }
     
     public void run(ArrayList<Ball> balls) {
         collide(balls);
@@ -26,9 +34,23 @@ public class Ball {
         render();
     }
     
-    public void collide(ArrayList<Ball> balls) { // TODO: fina a way to simplify
+    public void collide(ArrayList<Ball> balls) { // TODO: find a way to simplify
         for (Ball ball : balls) {
             if (ball != this && touching(ball)) {
+                // displacement
+                PVector midpoint = PVector.add(this.position, ball.position).div(2);
+                float dist = PVector.dist(this.position, ball.position);
+
+                PVector thisPos = this.position.copy();
+                PVector thatPos = ball.position.copy();
+
+                this.position.x = midpoint.x + this.radius * (thisPos.x - thatPos.x) / dist;
+                this.position.y = midpoint.y + this.radius * (thisPos.y - thatPos.y) / dist;
+
+                ball.position.x = midpoint.x + ball.radius * (thatPos.x - thisPos.x) / dist;
+                ball.position.y = midpoint.y + ball.radius * (thatPos.y - thisPos.y) / dist;
+
+                // speed calculations
                 PVector thisVel = this.velocity.copy();
                 PVector thatVel = ball.velocity.copy();
                 

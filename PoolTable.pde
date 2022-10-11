@@ -4,13 +4,15 @@ public class PoolTable {
     public PoolTable(int initCount) {
         this.balls = new ArrayList();
         while(initCount > 0) {
-            this.balls.add(new Ball(random(width), random(height)));
+            this.balls.add(new Ball(random(width), random(height), PVector.random2D().mult(random(10))));
             initCount--;
         }
     }
 
-    public void add(float x, float y) {
-        this.balls.add(new Ball(x, y));
+    public ArrayList<Ball> getBalls() {return this.balls;}
+
+    public void add(float x, float y, PVector initAcc) {
+        this.balls.add(new Ball(x, y, initAcc));
     }
     
     public void run() {
