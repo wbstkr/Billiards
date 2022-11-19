@@ -16,8 +16,6 @@ public class PoolTable {
     }
     
     public void run() {
-        for (Ball ball : this.balls) {
-            ball.run(this.balls);
-        }
+        this.balls.forEach(ball -> ball.run(this.balls));
     }
 }
